@@ -8,6 +8,8 @@
   },
   "scripts": {
     "start": "nodemon",
+    "precompile": "rm -rf dist",
+    "compile": "tsc && tsc-alias",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -30,6 +32,7 @@
     "@types/koa-pino-logger": "^3.0.4",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.2"
   }
