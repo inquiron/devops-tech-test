@@ -19,7 +19,7 @@ RUN npm run compile
 FROM node:21.6.0-alpine AS runtime
 
 # Create non-root user for security
-RUN addgroup -S prodgroup && produser -S produser -G prodgroup
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Set working directory
 WORKDIR /app
@@ -33,10 +33,10 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/config ./config
 
 # Define correct permissions
-RUN chown -R produser:prodgroup /app
+RUN chown -R appuser:appgroup /app
 
 # Switch to non-root user
-USER produser
+USER appuser
 
 # Expose the application port
 EXPOSE 9002
