@@ -8,7 +8,7 @@ on:
 jobs:
   publish:
     name: Build & Push to AWS ECR
-    runs-on: ubuntu-latest # for github hosted runners
+    runs-on: ubuntu-latest # for github hosted runner
 
     env:
       AWS_REGION: us-east-1
