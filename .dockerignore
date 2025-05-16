@@ -1,3 +1,5 @@
 *
 !app/src
 !app/config
+app/node_modules
+app/dist
