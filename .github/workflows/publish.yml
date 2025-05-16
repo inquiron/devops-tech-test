@@ -3,7 +3,7 @@ name: Publish Docker Image to ECR
 on:
   push:
     branches:
-      - feature/devops-test
+      - feature/anusha/devops-tech-test
 
 jobs:
   publish:
