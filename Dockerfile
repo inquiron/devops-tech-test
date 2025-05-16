@@ -1,23 +1,25 @@
 # -------- Stage 1: Build Stage --------
 FROM node:21.6.0-alpine AS builder
 
-# Set working directory
+# Define working directory for app source
 WORKDIR /app
 
-# Copy package files and install all dependencies (including dev)
+# Copying package files and install all dependencies
 COPY app/package*.json ./
 RUN npm install
 
 # Copy the entire source code and build the project
 COPY app/ .
+
+# Compile the application
 RUN npm run compile
 
 
 # -------- Stage 2: Production Stage --------
-FROM node:21.6.0-alpine
+FROM node:21.6.0-alpine AS runtime
 
 # Create non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup -S prodgroup && produser -S produser -G prodgroup
 
 # Set working directory
 WORKDIR /app
@@ -26,15 +28,15 @@ WORKDIR /app
 COPY app/package*.json ./
 RUN npm install --omit=dev
 
-# Copy compiled app and config from builder stage
+# Copying compiled app and config from builder stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/config ./config
 
 # Set correct permissions
-RUN chown -R appuser:appgroup /app
+RUN chown -R produser:prodgroup /app
 
 # Switch to non-root user
-USER appuser
+USER produser
 
 # Expose the application port
 EXPOSE 9002
