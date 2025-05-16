@@ -1,4 +1,4 @@
-# -------- Stage 1: Build Stage --------
+# Build Stage
 FROM node:21.6.0-alpine AS builder
 
 # Define working directory for app source
@@ -15,7 +15,7 @@ COPY app/ .
 RUN npm run compile
 
 
-# -------- Stage 2: Production Stage --------
+# Production Stage
 FROM node:21.6.0-alpine AS runtime
 
 # Create non-root user for security
@@ -32,7 +32,7 @@ RUN npm install --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/config ./config
 
-# Set correct permissions
+# Define correct permissions
 RUN chown -R produser:prodgroup /app
 
 # Switch to non-root user
