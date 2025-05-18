@@ -1,0 +1,11 @@
+resources:
+  - ../../base
+
+namespace: production
+
+patches:
+  - path: deployment-patch.yaml
+  - path: ingress-patch.yaml
+
+
+#namePrefix: production-

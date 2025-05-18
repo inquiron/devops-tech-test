@@ -1,0 +1,9 @@
+resources:
+  - ../../base
+
+namespace: local
+
+patches:
+  - path: deployment-patch.yaml
+
+#namePrefix: local-

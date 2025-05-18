@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app
+  labels:
+    app: node-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: node-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      containers:
+        - name: node-app
+          image: anushamadhala678/node-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9002
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9002
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9002
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          env:
+            - name: APP_PORT
+              value: "9002"
+            - name: GOOGLE_KEY
+              value: XXXXXXX
