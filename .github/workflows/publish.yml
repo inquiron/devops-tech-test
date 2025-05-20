@@ -3,7 +3,7 @@ name: Publish Docker Image to ECR
 on:
   push:
     branches:
-      - feature/anusha/devops-tech-test
+      - main
 
 jobs:
   publish:
@@ -54,16 +54,16 @@ jobs:
             -t "$REGISTRY/$IMAGE:latest" \
             .
 
-      # - name: Scan Docker image with Trivy
-      #   uses: aquasecurity/trivy-action@master
-      #   with:
-      #     image-ref: ${{ env.ECR_REPOSITORY }}:latest
-      #     format: table
-      #     exit-code: 1
-      #     ignore-unfixed: true
-      #     vuln-type: os,library
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.ECR_REPOSITORY }}:latest
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
 
-      - name: Push image to ECR
+      - name: Push image to AWS ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE: ${{ env.ECR_REPOSITORY }}
