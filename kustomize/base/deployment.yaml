@@ -48,4 +48,7 @@ spec:
             - name: APP_PORT
               value: "9002"
             - name: GOOGLE_KEY
-              value: XXXXXXX
+              valueFrom:
+                secretKeyRef:
+                  name: node-app-secrets
+                  key: GOOGLE_KEY

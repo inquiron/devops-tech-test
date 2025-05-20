@@ -6,14 +6,4 @@ resources:
   - service.yaml
   - ingress.yaml
   - hpa.yaml
-
-#secretGenerator:
-#  - name: google-api-secret
-#    literals:
-#      - GOOGLE_KEY=dummy
-#    type: Opaque
-
-
-
-#generatorOptions:
-#  disableNameSuffixHash: true
+  - node-app-sealed-secret.yaml
