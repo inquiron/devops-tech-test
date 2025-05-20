@@ -8,7 +8,7 @@ on:
 jobs:
   publish:
     name: Build & Push to AWS ECR
-    runs-on: ubuntu-latest # for github hosted runner
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
@@ -43,14 +43,16 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and tag Docker image
-        REGISTRY: ${{ steps.login-ecr.outputs.registry }}  # e.g., 123456789012.dkr.ecr.us-east-1.amazonaws.com
-        IMAGE: ${{ env.ECR_REPOSITORY }}                   # e.g., devops-test
-        SHA: ${{ github.sha }}
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE: ${{ env.ECR_REPOSITORY }}
+          SHA: ${{ github.sha }}
         run: |
           docker build \
             -f ./Dockerfile \
             -t "$REGISTRY/$IMAGE:$SHA" \
-            -t "$REGISTRY/$IMAGE:latest" \            .
+            -t "$REGISTRY/$IMAGE:latest" \
+            .
 
       # - name: Scan Docker image with Trivy
       #   uses: aquasecurity/trivy-action@master
@@ -62,6 +64,10 @@ jobs:
       #     vuln-type: os,library
 
       - name: Push image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE: ${{ env.ECR_REPOSITORY }}
+          SHA: ${{ github.sha }}
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:${{ env.IMAGE_TAG }}
-         
+          docker push "$REGISTRY/$IMAGE:$SHA"
+          docker push "$REGISTRY/$IMAGE:latest"
