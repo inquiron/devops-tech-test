@@ -8,15 +8,18 @@ WORKDIR /app
 COPY app/package*.json ./
 RUN npm install
 
-# Copy the entire source code and build the project
+# Copy source files and build the app
 COPY app/ .
-
-# Compile the application
 RUN npm run compile
 
 
-# Production Stage
+# Runtime Stage
 FROM node:21.6.0-alpine AS runtime
+
+# Set secure runtime environment
+ENV NODE_ENV=production \
+    APP_PORT=9002 \
+    CONFIG_PATH=./config
 
 # Create non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
@@ -32,14 +35,12 @@ RUN npm install --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/config ./config
 
-# Define correct permissions
+# Set ownership & permissions
 RUN chown -R appuser:appgroup /app
-
-# Switch to non-root user
 USER appuser
 
 # Expose the application port
-EXPOSE 9002
+EXPOSE ${APP_PORT}
 
 # Set the entrypoint and cmd
 ENTRYPOINT ["node"]
