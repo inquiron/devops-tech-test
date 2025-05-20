@@ -1,29 +1,28 @@
 variable "kube_config_path" {
-  type        = string
   description = "Path to kubeconfig file"
+  type        = string
+  default     = "~/.kube/config"
+}
+
+variable "kube_config_context" {
+  description = "Kubeconfig context name"
+  type        = string
+  default     = "minikube"
 }
 
 variable "environment" {
+  description = "Deployment environment (local or production)"
   type        = string
-  description = "Environment name (e.g., local or production)"
 }
 
-variable "kustomize_path" {
+variable "kustomize_namespace" {
+  description = "Namespace used in the Kustomize overlays"
   type        = string
-  description = "Path to kustomize overlay"
 }
 
-variable "revision" {
-  type        = string
-  default     = "HEAD"
+variable "use_local_cluster" {
+  description = "Set to true for local (Minikube) cluster, false for remote (EKS)"
+  type        = bool
 }
 
-variable "target_namespace" {
-  type        = string
-  default     = "default"
-}
 
-variable "repo_url" {
-  type        = string
-  description = "Git repo URL containing Kustomize overlays"
-}
