@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: dev.env
+    - host: local.dev.test
       http:
         paths:
           - path: /

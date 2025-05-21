@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: dev.env# change for Prod
+    - host: local.dev.test# change for Prod
       http:
         paths:
           - path: /
