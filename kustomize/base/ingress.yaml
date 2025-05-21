@@ -2,14 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: node-app-ingress
-  namespace: local
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
   rules:
-    - host: dev.local
+    - host: dev.env
       http:
         paths:
           - path: /
@@ -22,5 +21,5 @@ spec:
 
 #  tls:
 #    - hosts:
-#        - dev.local.com
+#        - dev.env.com
 #      secretName: node-app-tls-secret

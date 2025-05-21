@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: node-app
-  namespace: {}
   labels:
     app: node-app
 spec:
@@ -26,7 +25,7 @@ spec:
           image: anushamadhala678/node-app:latest
           imagePullPolicy: IfNotPresent
           ports:
-              containerPort: 9002
+             - containerPort: 9002
           resources:
             requests:
               cpu: "100m"

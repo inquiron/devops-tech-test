@@ -24,5 +24,3 @@ variable "use_local_cluster" {
   description = "Set to true for local (Minikube) cluster, false for remote (EKS)"
   type        = bool
 }
-
-

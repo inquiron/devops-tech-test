@@ -1,4 +1,3 @@
-
 resource "kubernetes_namespace" "app" {
   metadata {
     name = var.kustomize_namespace

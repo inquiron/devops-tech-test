@@ -1,7 +1,6 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  namespace: default
   name: node-app-hpa
 spec:
   scaleTargetRef:
