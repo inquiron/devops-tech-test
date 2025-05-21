@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: node-app
+  namespace: {}
   labels:
     app: node-app
 spec:
@@ -19,12 +20,13 @@ spec:
       labels:
         app: node-app
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
         - name: node-app
           image: anushamadhala678/node-app:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 9002
+              containerPort: 9002
           resources:
             requests:
               cpu: "100m"
@@ -36,7 +38,7 @@ spec:
             httpGet:
               path: /
               port: 9002
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:

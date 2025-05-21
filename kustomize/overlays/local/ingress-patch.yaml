@@ -5,11 +5,10 @@ metadata:
   namespace: local
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
   rules:
-    - host: dev.local
+    - host: dev.local# change for Prod
       http:
         paths:
           - path: /
@@ -19,8 +18,3 @@ spec:
                 name: node-app
                 port:
                   number: 80
-
-#  tls:
-#    - hosts:
-#        - dev.local.com
-#      secretName: node-app-tls-secret

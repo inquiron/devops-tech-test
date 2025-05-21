@@ -3,11 +3,11 @@ kind: Ingress
 metadata:
   name: node-app-ingress
   annotations:
-#    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-    - host: prod.app.test
+    - host: prod.app.test # change for Prod
       http:
         paths:
           - path: /
@@ -17,3 +17,8 @@ spec:
                 name: node-app
                 port:
                   number: 80
+
+#  tls:
+#    - hosts:
+#        - prod.com
+#      secretName: node-app-tls-secret
