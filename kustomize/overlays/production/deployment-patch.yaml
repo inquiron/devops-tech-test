@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app
+spec:
+  template:
+    spec:
+      containers:
+        - name: node-app
+          env:
+            - name: APP_PORT
+              value: "9002"
+            - name: GOOGLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: node-app-secrets
+                  key: GOOGLE_KEY

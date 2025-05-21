@@ -1,0 +1,76 @@
+name: Publish Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    name: Build & Push to AWS ECR
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      AWS_REGION: us-east-1
+      ECR_REPOSITORY: devops-test
+      IMAGE_TAG: latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create ECR repo if it doesn't exist (fail silently if exists)
+        run: |
+          if ! aws ecr describe-repositories --repository-names $ECR_REPOSITORY > /dev/null 2>&1; then
+            echo "Creating ECR repo: $ECR_REPOSITORY"
+            aws ecr create-repository --repository-name $ECR_REPOSITORY
+          else
+            echo "ECR repo $ECR_REPOSITORY already exists. Continuing..."
+          fi
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and tag Docker image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE: ${{ env.ECR_REPOSITORY }}
+          SHA: ${{ github.sha }}
+        run: |
+          docker build \
+            -f ./Dockerfile \
+            -t "$REGISTRY/$IMAGE:$SHA" \
+            -t "$REGISTRY/$IMAGE:latest" \
+            .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.ECR_REPOSITORY }}:latest
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          vuln-type: os,library
+
+      - name: Push image to AWS ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE: ${{ env.ECR_REPOSITORY }}
+          SHA: ${{ github.sha }}
+        run: |
+          docker push "$REGISTRY/$IMAGE:$SHA"
+          docker push "$REGISTRY/$IMAGE:latest"
