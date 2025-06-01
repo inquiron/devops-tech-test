@@ -1,18 +1,32 @@
-FROM node:22-bullseye-slim
+FROM node:22.16.0-alpine3.21
 
-# Copy app source code and exposing port
-RUN mkdir app
 WORKDIR /app
 
-COPY package.json package-lock.json .
+# Install dependencies
+COPY package.json package-lock.json ./
 RUN npm i
 
-COPY . . 
+# Build app
+COPY ./ ./ 
 RUN npm run compile
 
-# Setup a user 'app' to avoid running on root
-RUN useradd app
-USER app
+
+
+FROM node:22.16.0-alpine3.21
+
+WORKDIR /app
+
+# Install runtime dependencies
+COPY package.json package-lock.json ./
+RUN npm i --omit dev
+
+# Copy built app
+COPY --from=0 /app/dist/ /app/dist/
+COPY config/ config/
+
+# Setup user for run
+RUN adduser -S appUser
+USER appUser
 
 EXPOSE 9002
 
