@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dtt-service
+spec:
+  selector:
+    app: devops-tech-test-pod
+  type: LoadBalancer
+  ports:
+    - port: 1234
+      targetPort: 7007

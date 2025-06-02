@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dtt-deployment
+  # namespace: dtt-dev
+spec:
+  selector:
+    matchLabels:
+      app: devops-tech-test-pod
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: devops-tech-test-pod
+    spec:
+      containers:
+        - name: devops-tech-test
+          image: 241793127680.dkr.ecr.eu-west-2.amazonaws.com/devops-tech-test:latest
+          ports:
+            - containerPort: 7007
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+          env:
+            - name: APP_PORT
+              value: "7007"
