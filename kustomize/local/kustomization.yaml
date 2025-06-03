@@ -1,0 +1,7 @@
+resources:
+  - ../base
+namePrefix: local-
+labels:
+  - pairs:
+      env: local
+    includeSelectors: true 

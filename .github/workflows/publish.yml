@@ -6,6 +6,7 @@ on:
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   REGISTRY:   ${{ vars.AWS_REGISTRY }}
+  EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}
   REPOSITORY: devops-tech-test
   IMAGE_NAME: devops-tech-test
 
@@ -69,3 +70,14 @@ jobs:
         run: |
           rm -rf ${{ runner.temp }}/.buildx-cache
           mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
+
+      - name: Prepare Kubernetes
+        run: |
+          echo "GOOGLE_KEY=${{ secrets.GOOGLE_KEY }}" > ./kustomize/base/.env.google
+          sed -i "s|DTT_IMAGE_NAME|${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest|g" ./kustomize/base/deployment.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          aws eks --region eu-west-2 update-kubeconfig --name ${{ env.EKS_CLUSTER }}
+          cat ~/.kube/config
+          kubectl apply -k kustomize/prod/
