@@ -1,0 +1,35 @@
+name: Docker Security Scan
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ github.repository }}  # e.g., crisselle-c/devops-tech-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          IMAGE_TAG=$(echo "${{ github.repository }}" | awk -F/ '{print $2}' | tr '[:upper:]' '[:lower:]')
+          docker build -t "$IMAGE_TAG:latest" .
+
+      - name: Install Trivy
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.51.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.51.1_Linux-64bit.deb
+
+      - name: Scan Docker image with Trivy
+        run: |
+          IMAGE_TAG=$(echo "${{ github.repository }}" | awk -F/ '{print $2}' | tr '[:upper:]' '[:lower:]')
+          trivy image "$IMAGE_TAG:latest"
