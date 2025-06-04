@@ -48,6 +48,7 @@ resource "kubernetes_secret" "dtt_google_secret" {
   }
 }
 
+# Ref: https://developer.hashicorp.com/terraform/tutorials/kubernetes/kubernetes-provider
 resource "kubernetes_deployment" "dtt_deployment" {
   metadata {
     name = "${var.env}-dtt-deployment"
