@@ -1,0 +1,43 @@
+name: deploy-image
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      APP_PORT: ${{ secrets.APP_PORT }}
+      CLUSTER: ${{ secrets.CLUSTER }}
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v3
+      - name: login to AWS ECR 
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true
+      - name: Ensure ECR repo exists
+        run: aws ecr describe-repositories --repository-names my-app || aws ecr create-repository --repository-name my-app
+      - name: build image
+        working-directory: ./app
+        run: |
+          IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app"
+          docker build -t "$IMAGE_URI:latest" -t "$IMAGE_URI:${{ github.sha }}" -f Dockerfile .
+      - name: Pushing image to ECR
+        run: |
+          IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/my-app"
+          docker push "$IMAGE_URI:latest"
+          docker push "$IMAGE_URI:${{ github.sha }}"
+      - name: configure kubectl for EKS 
+        run: |
+          aws eks --region $AWS_REGION update-kubeconfig --name $CLUSTER
+      - name: Install envsubst
+        run: sudo apt-get update && sudo apt-get install -y gettext
+      - name: deploy to EKS
+        run: |
+          envsubst < kustomize/deployment-eks.yml | kubectl apply -f - 
+          envsubst < kustomize/load-balancer.yml | kubectl apply -f -
