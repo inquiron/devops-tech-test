@@ -2,6 +2,10 @@ name: Manual Trivy Scan
 
 on:
   workflow_dispatch:
+    inputs:
+      manual-trigger:
+        description: 'Manually trigger the workflow'
+        required: true
 
 jobs:
   scan:
