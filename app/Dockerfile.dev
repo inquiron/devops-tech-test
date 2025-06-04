@@ -1,0 +1,16 @@
+FROM node:20-alpine AS dev
+
+WORKDIR /app
+
+# Install all dependencies including dev dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose dev port (change as needed)
+EXPOSE 9002
+
+# Start the app with nodemon for live reload
+CMD ["npx", "start"]
