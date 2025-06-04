@@ -1,13 +1,6 @@
 name: Docker Security Scan
 
 on:
-  push:
-    branches:
-      - main
-      - feature/*
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
