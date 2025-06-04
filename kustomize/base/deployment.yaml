@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: devops-tech-test
-          image: 241793127680.dkr.ecr.eu-west-2.amazonaws.com/devops-tech-test:latest
+          image: DTT_IMAGE_NAME
           ports:
             - name: geocode
               containerPort: 7007
