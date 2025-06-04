@@ -6,12 +6,15 @@ on:
       - main
       - feature/*
   pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ${{ github.repository }}  # e.g., crisselle-c/devops-tech-test
+      IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
