@@ -1,11 +1,10 @@
 name: Manual Trivy Scan
 
 on:
+  push:
+    branches:
+      - feature/*
   workflow_dispatch:
-    inputs:
-      manual-trigger:
-        description: 'Manually trigger the workflow'
-        required: true
 
 jobs:
   scan:
