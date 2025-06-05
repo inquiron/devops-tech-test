@@ -19,23 +19,19 @@ jobs:
           pip install boto3 --quiet
           sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Retrieve AWS Secret from Secrets Manager
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_SECRET_NAME: ${{ secrets.AWS_SECRET_NAME }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Retrieve credentials from AWS Secrets Manager
+        id: fetch-secrets
         run: |
           SECRET=$(aws secretsmanager get-secret-value \
-            --region "$AWS_REGION" \
-            --secret-id "$AWS_SECRET_NAME" \
-            --query SecretString \
-            --output text)
+            --region "${{ secrets.AWS_REGION }}" \
+            --secret-id "${{ secrets.AWS_SECRET_NAME }}" \
+            --query SecretString --output text)
 
           echo "$SECRET" > secret.json
           echo "AWS_ACCESS_KEY_ID=$(jq -r .AWS_ACCESS_KEY_ID secret.json)" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=$(jq -r .AWS_SECRET_ACCESS_KEY secret.json)" >> $GITHUB_ENV
-          echo "AWS_REGION=$AWS_REGION" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
