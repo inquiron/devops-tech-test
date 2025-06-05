@@ -6,12 +6,9 @@ on:
       - feature/*
       - main
 
-.defaults: &defaults
-  runs-on: ubuntu-latest
-
 jobs:
   trivy-scan:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run Trivy Scan
@@ -21,7 +18,7 @@ jobs:
 
   publish:
     needs: trivy-scan
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Configure AWS Credentials
