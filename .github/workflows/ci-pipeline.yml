@@ -12,3 +12,4 @@ jobs:
   publish:
     needs: scan
     uses: ./.github/workflows/publish.yml
+    secrets: inherit

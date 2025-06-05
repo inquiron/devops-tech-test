@@ -1,5 +1,12 @@
 on:
   workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_REGION:
+        required: true
 
 jobs:
   publish-build:
@@ -24,22 +31,25 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-north-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Create and Access ECR Repo (if not exists)
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           aws ecr describe-repositories --repository-names dev-tech-test || \
           aws ecr create-repository --repository-name dev-tech-test || true
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           echo "ACCOUNT_ID=$ACCOUNT_ID" >> $GITHUB_ENV
-          aws ecr get-login-password --region eu-north-1 | \
-            docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com
+          aws ecr get-login-password --region $AWS_REGION | \
+            docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
       - name: Build and Push Docker Image
         env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
         run: |
-          IMAGE_URI=$ACCOUNT_ID.dkr.ecr.eu-north-1.amazonaws.com/dev-tech-test:latest
+          IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/dev-tech-test:latest
           docker build -t $IMAGE_URI .
           docker tag dev-tech-test:latest $IMAGE_URI
           docker push $IMAGE_URI
