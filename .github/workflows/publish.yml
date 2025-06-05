@@ -17,7 +17,7 @@ jobs:
       - name: Install boto3 and jq
         run: |
           pip install boto3 --quiet
-          apt-get update && apt-get install -y jq
+          sudo apt-get update && sudo apt-get install -y jq
 
       - name: Retrieve AWS Secret from Secrets Manager
         env:
