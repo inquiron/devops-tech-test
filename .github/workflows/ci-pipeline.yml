@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main
-      - features/*
+      - feature/*
 
 jobs:
-  trivy-scan:
-    uses: crisselle-c/devops-tech-test/.github/workflows/trivy-scan.yml@feature/devtechtest
+  trivyscan:
+    uses: ./.github/workflows/trivy-scan.yml
 
   publish:
     needs: trivy
