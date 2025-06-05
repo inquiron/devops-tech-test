@@ -19,6 +19,7 @@ on:
 
 jobs:
   docker-build:
+  needs: scan
     runs-on: ubuntu-latest
     outputs:
       image_uri: ${{ steps.set-image-uri.outputs.image_uri }}
@@ -44,6 +45,7 @@ jobs:
 
   publish-ecr:
     runs-on: ubuntu-latest
+    needs: docker-build
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
