@@ -43,7 +43,6 @@ jobs:
             -f ${{ inputs.dockerfile_path }} ${{ inputs.context }}
 
   publish-ecr:
-    needs: docker-build
     runs-on: ubuntu-latest
 
     steps:
