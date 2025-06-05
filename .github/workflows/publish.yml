@@ -19,7 +19,7 @@ on:
 
 jobs:
   docker-build:
-  needs: scan
+    needs: scan
     runs-on: ubuntu-latest
     outputs:
       image_uri: ${{ steps.set-image-uri.outputs.image_uri }}
