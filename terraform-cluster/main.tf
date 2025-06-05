@@ -21,14 +21,13 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name            = "ex-${basename(path.cwd)}"
   cluster_version = "1.31"
 
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   tags = {
-    Test       = local.name
+    Test    = var.cluster_name
     Service = "dtt-service"
   }
 }
@@ -67,7 +66,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
 
-  name = local.name
+  name = var.cluster_name
   cidr = local.vpc_cidr
 
   azs             = local.azs
