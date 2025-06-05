@@ -5,7 +5,6 @@ on:
 
 jobs:
   publish:
-    name: Build and Push to ECR
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +25,7 @@ jobs:
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
       
       - name: Retrieve credentials from AWS Secrets Manager
         id: fetch-secrets

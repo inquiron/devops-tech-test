@@ -6,9 +6,9 @@ on:
       - feature/*
 
 jobs:
-  trivy-scan:
+  scan:
     uses: ./.github/workflows/trivy-scan.yml
 
   publish:
-    needs: trivy-scan
+    needs: scan
     uses: ./.github/workflows/publish.yml
