@@ -42,7 +42,6 @@ jobs:
           docker build -t ${{ steps.set-image-uri.outputs.image_uri }} \
             -f ${{ inputs.dockerfile_path }} ${{ inputs.context }}
 
-jobs:
   publish-ecr:
     needs: docker-build
     runs-on: ubuntu-latest
@@ -73,6 +72,6 @@ jobs:
         run: |
           IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ env.REPO_NAME }}:${{ env.IMAGE_TAG }}"
           echo "Publishing to ECR $IMAGE_URI"
-          
+
           docker tag ${{ env.REPO_NAME }}:${{ env.IMAGE_TAG }} $IMAGE_URI
           docker push $IMAGE_URI
