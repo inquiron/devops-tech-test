@@ -14,7 +14,7 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
-      AWS_REGION:
+      AWS_REGION_CI:
         required: true
 
 jobs:
@@ -44,7 +44,6 @@ jobs:
 
   publish-ecr:
     runs-on: ubuntu-latest
-
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
