@@ -26,19 +26,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Create ECR Repo (if not exists)
+      - name: Create and Access ECR Repo (if not exists)
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           aws ecr describe-repositories --repository-names dev-tech-test || \
           aws ecr create-repository --repository-name dev-tech-test || true
-
-      - name: Login to Amazon ECR
-        run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           echo "ACCOUNT_ID=$ACCOUNT_ID" >> $GITHUB_ENV
           aws ecr get-login-password --region $AWS_REGION | \
             docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
       - name: Build and Push Docker Image
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
         run: |
           IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/dev-tech-test:latest
           docker build -t $IMAGE_URI .
