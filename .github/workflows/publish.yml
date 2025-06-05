@@ -50,6 +50,6 @@ jobs:
           ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
         run: |
           IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION_CI.amazonaws.com/dev-tech-test:latest
-          docker build -t $IMAGE_URI .
+          docker build -t $IMAGE_URI -f app/Dockerfile app/
           docker tag dev-tech-test:latest $IMAGE_URI
           docker push $IMAGE_URI
