@@ -13,6 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set environment
+        run: |
+          BRANCH_NAME=$(echo $GITHUB_REF | sed 's|refs/heads/||')
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            ECR_REPO="dev-tech-test-production"
+            IMAGE_TAG="latest"
+            echo "DEPLOY_ENV=prod" >> $GITHUB_ENV
+          elif [[ "$BRANCH_NAME" == "feature/devtechtest" ]]; then
+            ECR_REPO="dev-tech-test"
+            IMAGE_TAG="staging"
+            echo "DEPLOY_ENV=staging" >> $GITHUB_ENV
+          else
+            echo "Branch $BRANCH_NAME not configured for publish."
+            exit 1
+          fi
+
+      - name: Show environment
+        run: echo "Publish-$DEPLOY_ENV"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -49,6 +68,23 @@ jobs:
           AWS_REGION_CI: ${{ secrets.AWS_REGION_CI }}
           ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
         run: |
+          
+
+          # Create repo if not exists (idempotent)
+          aws ecr describe-repositories --repository-names $ECR_REPO || aws ecr create-repository --repository-name $ECR_REPO || true
+
+          # Login to ECR
+          aws ecr get-login-password --region $AWS_REGION_CI | \
+            docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION_CI.amazonaws.com
+
+          # Build and push image
+          IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION_CI.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+
+          docker build -t $IMAGE_URI -f app/Dockerfile app/
+          docker push $IMAGE_URI
           IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION_CI.amazonaws.com/dev-tech-test:latest
           docker build -t $IMAGE_URI -f app/Dockerfile app/
           docker push $IMAGE_URI
+      
+      - name: Show environment
+        run: echo "Publish-$DEPLOY_ENV"
