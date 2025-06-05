@@ -54,6 +54,8 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION_CI }}
 
       - name: Create and Access ECR Repo (if not exists)
+        env:
+          AWS_REGION_CI: ${{ secrets.AWS_REGION_CI }}
         run: |
           REPO_NAME="${GITHUB_REPOSITORY#*/}"
           aws ecr describe-repositories --repository-names $REPO_NAME >/dev/null 2>&1 || \
