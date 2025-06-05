@@ -1,10 +1,8 @@
-name: Publish build
-
 on:
   workflow_call:
 
 jobs:
-  publish:
+  publish-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,16 +21,19 @@ jobs:
 
       - name: Retrieve credentials from AWS Secrets Manager
         id: fetch-secrets
+        env:
+          REGION: ${{ secrets.AWS_REGION }}
+          SECRET_NAME: ${{ secrets.AWS_SECRET_NAME }}
         run: |
           SECRET=$(aws secretsmanager get-secret-value \
-            --region ${{ secrets.AWS_REGION }} \
-            --secret-id ${{ secrets.AWS_SECRET_NAME }} \
+            --region "$REGION" \
+            --secret-id "$SECRET_NAME" \
             --query SecretString --output text)
 
           echo "$SECRET" > secret.json
           echo "AWS_ACCESS_KEY_ID=$(jq -r .AWS_ACCESS_KEY_ID secret.json)" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=$(jq -r .AWS_SECRET_ACCESS_KEY secret.json)" >> $GITHUB_ENV
-          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+          echo "AWS_REGION=$REGION" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
