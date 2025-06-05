@@ -7,8 +7,8 @@ on:
 
 jobs:
   trivy:
-    uses: ./trivy-scan.yml
+    uses: crisselle-c/devops-tech-test/.github/workflows/trivy-scan.yml
 
   publish:
     needs: trivy
-    uses: .publish.yml
+    uses: crisselle-c/devops-tech-test/.github/workflows/publish.yml
