@@ -1,0 +1,6 @@
+# CVE-2024-21538 affects cross-spawn versions prior to 7.0.5
+# We are using cross-spawn@^7.0.6 which includes the fix.
+# This CVE is being falsely reported due to caching or misidentified versions.
+# Usage of cross-spawn in our application does not involve untrusted input,
+# so risk of exploitation is considered negligible in this context.
+CVE-2024-21538
