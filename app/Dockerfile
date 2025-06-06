@@ -15,13 +15,13 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Create non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
 # Copy only production files from build stage
 COPY package*.json ./
 RUN npm install --omit=dev
+
+# Create non-root user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 
 COPY --from=devtechtest_build /app/dist ./dist
 
