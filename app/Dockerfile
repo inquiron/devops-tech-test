@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy package files and install all dependencies
 COPY package*.json ./
-RUN npm i --omit=dev
+RUN npm ci
 
 # Copy source and build app
 COPY . .
@@ -20,9 +20,10 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
 
 # Copy only production files from build stage
+COPY package*.json ./
+RUN npm install --omit=dev
+
 COPY --from=devtechtest_build /app/dist ./dist
-COPY --from=devtechtest_build /app/node_modules ./node_modules
-COPY --from=devtechtest_build /app/package.json ./
 
 ENV NODE_ENV=production
 ENV APP_PORT=9002
