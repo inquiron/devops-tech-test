@@ -14,7 +14,7 @@ To ensure that the project runs the same on your machine as well as ours, we enc
 
 ### Docker & Kubernetes
 
-This project requires you to use Docker and have a local Kubernetes cluster. We recommend you use [Docker Desktop](https://www.docker.com/products/docker-desktop/), but there are other tools you can use if you wish. We will be using Docker Desktop and Kubernetes that ships with it to review your changes.
+This project requires you to use Docker and have a local Kubernetes cluster. We recommend you use [Docker Desktop](https://www.docker.com/products/docker-desktop/), but there are other tools you can use if you wish. We will be using Docker Desktop and Kubernetes that ships with it to review your changes, but if you are going to use other tooling please provide the steps you took to setup including an extensions, plugins or tooling you use.
 
 ### Setup
 
@@ -61,7 +61,7 @@ All transpiled files that are needed to run the application in a production envi
 
 ### Task
 
-* Write the Dockerfile for the application in the `app/` directory.
+* Complete the `Dockerfile` located in the root of the project for the application that is in the `app/` directory.
 * Ensure the Docker build process effectively utilises cache layers.
 * Ensure runtime image is as small as possible and has no vulnerabilities. (We are keen to be able to reproduce your steps for detecting vulnerabilities)
 * Ensure the image is secure by ensuring permissions are set correctly.
