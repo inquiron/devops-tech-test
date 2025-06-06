@@ -73,11 +73,10 @@ jobs:
         env:
           AWS_REGION_CI: ${{ secrets.AWS_REGION_CI }}
           ACCOUNT_ID: ${{ env.ACCOUNT_ID }}
-          REPO_NAME: ${{ env.REPO_NAME }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          DOCKER_IMAGE: ${{ needs.docker-build.outputs.image_uri }}
         run: |
-          IMAGE_URI="$ACCOUNT_ID.dkr.ecr.$AWS_REGION_CI.amazonaws.com/$REPO_NAME:$IMAGE_TAG"
+          IMAGE_URI="$ACCOUNT_ID.dkr.ecr.$AWS_REGION_CI.amazonaws.com/$DOCKER_IMAGE"
           echo "Publishing to ECR $IMAGE_URI"
 
-          docker tag $REPO_NAME:$IMAGE_TAG $IMAGE_URI
+          docker tag $DOCKER_IMAGE $IMAGE_URI
           docker push $IMAGE_URI
