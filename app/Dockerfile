@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy package files and install all dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm i
 
 # Copy source and build app
 COPY . .
@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Copy only production files from build stage
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm i --omit=dev
 
 # Create non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
