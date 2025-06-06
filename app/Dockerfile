@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Copy only production files from build stage
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm i --omit=dev
 
 # Create non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
