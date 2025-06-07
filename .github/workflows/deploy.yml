@@ -11,32 +11,44 @@ on:
         required: true
 
 jobs:
-  aws-setup-job:
-    uses: ./.github/workflows/cicd-aws.yml
-    with:
-      do_configure: true
-      do_secrets: true
-    secrets:
-      inherit
-
-  deploy:
-    needs: aws-setup-job
+  deployment:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      
+      - name: Configure temporary AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION_CI }}
+      
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Retrieve secrets from AWS Secrets Manager
+        id: get-secrets
+        run: |
+          secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secret.AWS_SECRET_NAME }} --query SecretString --output text)
+          echo "GOOGLE_KEY=$(echo "$secret_json" | jq -r '.google_key')" >> $GITHUB_OUTPUT
+          echo "KUBE_CONFIG=$(echo "$secret_json" | jq -r '.kube_config')" >> $GITHUB_OUTPUT
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
 
       - name: Configure kubeconfig
+        env:
+          KUBE_CONFIG: ${{ steps.get-secrets.outputs.KUBE_CONFIG }}
         run: |
-          echo '${{ needs.aws-setup-job.outputs.KUBE_CONFIG }}' > $HOME/.kube/config
+          echo "$KUBE_CONFIG" > $HOME/.kube/config
 
       - name: Create Kubernetes secret
+        env:
+          GOOGLE_KEY: ${{ steps.get-secrets.outputs.GOOGLE_KEY }}
         run: |
           kubectl create secret generic ${GITHUB_REPOSITORY#*/} \
-            --from-literal=GOOGLE_KEY='${{ needs.aws-setup-job.outputs.GOOGLE_KEY }}' \
+            --from-literal=GOOGLE_KEY=$GOOGLE_KEY \
             --dry-run=client -o yaml | kubectl apply -f -
 
 
