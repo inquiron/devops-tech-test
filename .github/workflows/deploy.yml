@@ -36,14 +36,18 @@ jobs:
           echo "GOOGLE_KEY=$(echo "$secret_json" | jq -r '.google_key')" >> $GITHUB_OUTPUT
           echo "KUBE_CONFIG=$(echo "$secret_json" | jq -r '.kube_config')" >> $GITHUB_OUTPUT
 
+      - name: Setup kubeconfig file
+        run: |
+          echo "${{ steps.get-secrets.outputs.KUBE_CONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+        env:
+          KUBE_CONFIG: ${{ steps.get-secrets.outputs.KUBE_CONFIG }}
+
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
 
-      - name: Configure kubeconfig
-        env:
-          KUBE_CONFIG: ${{ steps.get-secrets.outputs.KUBE_CONFIG }}
-        run: |
-          echo "$KUBE_CONFIG" > $HOME/.kube/config
+      - name: Verify kubectl config
+        run: kubectl config get-contexts
 
       - name: Create Kubernetes secret
         env:
@@ -52,7 +56,6 @@ jobs:
           kubectl create secret generic ${GITHUB_REPOSITORY#*/} \
             --from-literal=GOOGLE_KEY=$GOOGLE_KEY \
             --dry-run=client -o yaml | kubectl apply -f -
-
 
       - name: Deploy using Kustomize
         run: |
