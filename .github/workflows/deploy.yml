@@ -33,36 +33,31 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Retrieve secrets from AWS Secrets Manager
-        id: get-secrets
-        run: |
-          secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query SecretString --output text)
-          echo "GOOGLE_KEY=$(echo "$secret_json" | jq -r '.google_key')" >> $GITHUB_OUTPUT
-          echo "KUBE_CONFIG=$(echo "$secret_json" | jq -r '.kube_config')" >> $GITHUB_OUTPUT
+      # - name: Retrieve secrets from AWS Secrets Manager
+      #   id: get-secrets
+      #   run: |
+      #     secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query SecretString --output text)
+      #     echo "GOOGLE_KEY=$(echo "$secret_json" | jq -r '.google_key')" >> $GITHUB_OUTPUT
+      #     echo "KUBE_CONFIG=$(echo "$secret_json" | jq -r '.kube_config')" >> $GITHUB_OUTPUT
 
-      - name: Deploy to cluster
+      - name: Deploy to EKS
         uses: kodermax/kubectl-aws-eks@main
-        env:
-          KUBE_CONFIG: ${{ steps.get-secrets.outputs.KUBE_CONFIG }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
         with:
-          args: |
-            REPO_NAME=${GITHUB_REPOSITORY#*/} && \
-            kubectl set image deployment/$REPO_NAME $REPO_NAME=$ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG
+          cluster-name: ${GITHUB_REPOSITORY#*/}
+          aws-region: ${{ secrets.AWS_REGION_CI }}
+          args: apply -k kustomize/overlays/production
 
-      - name: Create Kubernetes secret
-        env:
-          GOOGLE_KEY: ${{ steps.get-secrets.outputs.GOOGLE_KEY }}
-        run: |
-          kubectl create secret generic ${GITHUB_REPOSITORY#*/} \
-            --from-literal=GOOGLE_KEY=$GOOGLE_KEY \
-            --dry-run=client -o yaml | kubectl apply -f -
+      - name: Verify rollout
+        uses: kodermax/kubectl-aws-eks@main
+        with:
+          cluster-name: your-cluster-name
+          aws-region: ${{ secrets.AWS_REGION_CI }}
+          args: rollout status deployment/${{ github.event.repository.name }} -n default
 
-      - name: Deploy using Kustomize
-        run: |
-          kubectl apply -k kustomize/overlays/production
+      # - name: Deploy using Kustomize
+      #   run: |
+      #     kubectl apply -k kustomize/overlays/production
 
-      - name: Verify deployment
-        run: |
-          kubectl rollout status deployment/${GITHUB_REPOSITORY#*/} -n default
+      # - name: Verify deployment
+      #   run: |
+      #     kubectl rollout status deployment/${GITHUB_REPOSITORY#*/} -n default
