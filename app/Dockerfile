@@ -25,6 +25,9 @@ USER appuser
 
 COPY --from=devtechtest_build /app/dist ./dist
 
+# Copy config folder
+COPY --from=devtechtest_build /app/config ./config
+
 ENV NODE_ENV=production
 ENV APP_PORT=9002
 

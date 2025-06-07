@@ -13,3 +13,9 @@ jobs:
     needs: scan
     uses: ./.github/workflows/publish.yml
     secrets: inherit
+  
+  deploy:
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    secrets:
+      inherit

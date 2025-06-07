@@ -1,0 +1,58 @@
+name: CI/CD AWS Setup
+
+on:
+  workflow_call:
+    inputs:
+      do_configure:
+        type: boolean
+        default: false
+      do_login:
+        type: boolean
+        default: false
+      do_secrets:
+        type: boolean
+        default: false
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_REGION_CI:
+        required: true
+    outputs:
+      GOOGLE_KEY:
+        value: ${{ jobs.aws.outputs.GOOGLE_KEY }}
+      KUBE_CONFIG:
+        value: ${{ jobs.aws.outputs.KUBE_CONFIG }}
+
+jobs:
+  aws:
+    runs-on: ubuntu-latest
+    outputs:
+      GOOGLE_KEY: ${{ steps.secrets.outputs.google_key }}
+      KUBE_CONFIG: ${{ steps.secrets.outputs.kube_config }}
+
+    steps:
+      - name: Configure AWS credentials
+        if: inputs.do_configure || inputs.do_login || inputs.do_secrets
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: inputs.do_login
+        run: |
+          aws ecr get-login-password --region ${{ inputs.AWS_REGION }} \
+            | docker login --username AWS --password-stdin <your_ecr_url>
+
+      - name: Retrieve secrets
+        if: inputs.do_secrets
+        id: secrets
+        run: |
+          google_key=$(aws secretsmanager get-secret-value --secret-id ${{ inputs.GOOGLE_KEY_SECRET_NAME }} --query SecretString --output text)
+          kube_config=$(aws secretsmanager get-secret-value --secret-id ${{ inputs.KUBE_CONFIG_SECRET_NAME }} --query SecretString --output text)
+          
+          echo "google_key=$google_key" >> $GITHUB_OUTPUT
+          echo "kube_config=$kube_config" >> $GITHUB_OUTPUT

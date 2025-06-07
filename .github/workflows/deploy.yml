@@ -1,0 +1,49 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_REGION_CI:
+        required: true
+
+jobs:
+  aws-setup-job:
+    uses: ./.github/workflows/cicd-aws.yml
+    with:
+      do_configure: true
+      do_secrets: true
+    secrets:
+      inherit
+
+  deploy:
+    needs: aws-setup-job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubeconfig
+        run: |
+          echo '${{ needs.aws-setup-job.outputs.KUBE_CONFIG }}' > $HOME/.kube/config
+
+      - name: Create Kubernetes secret
+        run: |
+          kubectl create secret generic ${GITHUB_REPOSITORY#*/} \
+            --from-literal=GOOGLE_KEY='${{ needs.aws-setup-job.outputs.GOOGLE_KEY }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+
+      - name: Deploy using Kustomize
+        run: |
+          kubectl apply -k kustomize/overlays/production
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/${GITHUB_REPOSITORY#*/} -n default

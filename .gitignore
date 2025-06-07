@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,terraform,node,terragrunt,helm
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,terraform,node,terragrunt,helm
 
+# Ignore secret credentials and API keys
+secret.yml
+
 ### Helm ###
 # Chart dependencies
 **/charts/*.tgz
