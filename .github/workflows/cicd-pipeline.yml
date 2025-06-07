@@ -15,6 +15,6 @@ jobs:
     secrets: inherit
   
   deploy:
-    needs: build
+    needs: publish
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
