@@ -1,0 +1,15 @@
+name: CI Pipeline
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+
+jobs:
+  scan:
+    uses: ./.github/workflows/trivy-scan.yml
+
+  publish:
+    needs: scan
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
