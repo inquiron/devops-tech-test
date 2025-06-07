@@ -9,6 +9,8 @@ on:
         required: true
       AWS_REGION_CI:
         required: true
+      AWS_SECRET_NAME:
+        required: true
 
 jobs:
   deployment:
@@ -30,7 +32,7 @@ jobs:
       - name: Retrieve secrets from AWS Secrets Manager
         id: get-secrets
         run: |
-          secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secret.AWS_SECRET_NAME }} --query SecretString --output text)
+          secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query SecretString --output text)
           echo "GOOGLE_KEY=$(echo "$secret_json" | jq -r '.google_key')" >> $GITHUB_OUTPUT
           echo "KUBE_CONFIG=$(echo "$secret_json" | jq -r '.kube_config')" >> $GITHUB_OUTPUT
 
