@@ -201,9 +201,9 @@ Uses real-world production patterns (ECR, EKS, Kustomize overlays, AWS Secrets M
 
 # Summary
 This project covers a complete DevOps lifecycle:
-🐳 Dockerization with secure builds
-🤖 Automated CI/CD pipelines
-☸️ Kubernetes manifests with Kustomize
-🛡️ Security scanning using Trivy & CodeQL
-☁️ Infrastructure as Code using Terraform
-🔐 Secrets managed via AWS Secrets Manager
+* 🐳 Dockerization with secure builds
+* 🤖 Automated CI/CD pipelines
+* ☸️ Kubernetes manifests with Kustomize
+* 🛡️ Security scanning using Trivy & CodeQL
+* ☁️ Infrastructure as Code using Terraform
+* 🔐 Secrets managed via AWS Secrets Manager
