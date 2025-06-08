@@ -2,7 +2,7 @@ resources:
   - ../../base
 
 patchesStrategicMerge:
-  - patch-env.yaml
+  - patch-env.yml
 
 secretGenerator:
   - name: devops-tech-test-secret
