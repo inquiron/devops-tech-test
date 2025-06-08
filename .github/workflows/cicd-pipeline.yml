@@ -6,10 +6,23 @@ on:
       - feature/*
 
 jobs:
-  scan:
-    uses: ./.github/workflows/trivy-scan.yml
-
-  publish:
-    needs: scan
+  build-and-publish:
     uses: ./.github/workflows/publish.yml
+    secrets: inherit
+
+  security-scan:
+    needs: build-and-publish
+    uses: ./.github/workflows/trivy-scan.yml
+    secrets: inherit
+
+  codeql-scan:
+    needs: build-and-publish
+    uses: ./.github/workflows/codeql.yml
+    secrets: inherit
+
+  deployment:
+    needs:
+      - security-scan
+      - codeql-scan
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit

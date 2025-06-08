@@ -9,22 +9,12 @@ on:
         required: true
 
 jobs:
-  publish-build:
+  main:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      
-      - name: Install boto3 and jq
-        run: |
-          pip install boto3 --quiet
-          sudo apt-get update && sudo apt-get install -y jq
 
       - name: Configure temporary AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -67,5 +57,5 @@ jobs:
           IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$AWS_REGION_CI.amazonaws.com/${GITHUB_REPOSITORY#*/}:$IMAGE_TAG
           echo "Building and pushing $IMAGE_URI"
 
-          docker build -t $IMAGE_URI -f app/$DOCKER app/
-          docker push $IMAGE_URI
+          docker build -t "$IMAGE_URI" -f app/$DOCKER app/
+          docker push "$IMAGE_URI"

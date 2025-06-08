@@ -1,0 +1,7 @@
+resources:
+  - deployment.yml
+  - service.yml
+  - hpa.yml
+
+generatorOptions:
+  disableNameSuffixHash: true

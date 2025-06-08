@@ -2,21 +2,37 @@ on:
   workflow_call:
 
 jobs:
-  trivy-scan:
+  main:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: ${{ github.repository }}
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION_CI }}
 
-      - name: Build Docker image
+      - name: Get ECR login
         run: |
-          IMAGE_TAG=$(echo "${{ github.repository }}" | awk -F/ '{print $2}' | tr '[:upper:]' '[:lower:]')
-          docker build --no-cache -t "$IMAGE_TAG:latest" -f app/Dockerfile app/
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "ACCOUNT_ID=$ACCOUNT_ID" >> $GITHUB_ENV
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION_CI }} | \
+            docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION_CI }}.amazonaws.com"
+
+      - name: Set image name and tag
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            IMAGE_TAG="latest"
+          else
+            IMAGE_TAG="${BRANCH_NAME//\//-}"
+          fi
+          IMAGE_NAME=$(echo "${{ github.repository }}" | awk -F/ '{print $2}' | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
       - name: Install Trivy
         run: |
@@ -24,7 +40,17 @@ jobs:
           sudo dpkg -i trivy_0.63.0_Linux-64bit.deb
           rm trivy_0.63.0_Linux-64bit.deb
 
-      - name: Scan Docker image with Trivy
+      - name: Pull and Scan Docker image with Trivy
         run: |
-          IMAGE_TAG=$(echo "${{ github.repository }}" | awk -F/ '{print $2}' | tr '[:upper:]' '[:lower:]')
-          trivy image --ignorefile .trivyignore --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_TAG:latest"
+          IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION_CI }}.amazonaws.com/${IMAGE_NAME}:${IMAGE_TAG}"
+          echo "Pulling $IMAGE_URI"
+          docker pull "$IMAGE_URI"
+
+          echo "Scanning $IMAGE_URI"
+          trivy image --ignorefile .trivyignore --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_URI"
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
