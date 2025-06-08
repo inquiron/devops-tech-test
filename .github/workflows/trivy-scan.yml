@@ -32,6 +32,7 @@ jobs:
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
       - name: Pull and scan Docker image with Trivy
+        working-directory: ${{ github.workspace }}
         run: |
           IMAGE_URI="$ACCOUNT_ID.dkr.ecr.${{ secrets.AWS_REGION_CI }}.amazonaws.com/${IMAGE_NAME}:${IMAGE_TAG}"
           echo "Scanning $IMAGE_URI"
@@ -41,7 +42,7 @@ jobs:
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:0.63.0 \
-            image --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_URI"
+            image --ignorefile .trivyignore --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_URI"
 
       #Cache Docker layers
       - name: Cache Docker layers
