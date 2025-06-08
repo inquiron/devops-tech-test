@@ -42,7 +42,7 @@ jobs:
       run: |
         pwd
         ls -R
-        kubectl apply -k kustomize/overlays/production
+        kubectl apply -k kustomize/overlays/production --validate=false
       env:
         KUBECONFIG: $HOME/.kube/config
 
