@@ -21,6 +21,8 @@ jobs:
     secrets: inherit
 
   deployment:
-    needs: security-scan
+    needs:
+      - security-scan
+      - codeql-scan
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
