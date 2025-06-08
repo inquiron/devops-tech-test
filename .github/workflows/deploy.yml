@@ -1,22 +1,16 @@
 name: Deploy to EKS
 
-# # on:
-# #   workflow_call:
-# #     secrets:
-# #       AWS_ACCESS_KEY_ID:
-# #         required: true
-# #       AWS_SECRET_ACCESS_KEY:
-# #         required: true
-# #       AWS_REGION_CI:
-# #         required: true
-# #       AWS_SECRET_NAME:
-# #         required: true
-
 on:
-  push:
-    branches:
-      - main
-      - feature/*
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_REGION_CI:
+        required: true
+      AWS_SECRET_NAME:
+        required: true
 
 env:
   TERRAFORM_WORKING_DIR: ./terraform
