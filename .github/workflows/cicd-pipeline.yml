@@ -5,16 +5,21 @@ on:
       - main
       - feature/*
 
-jobs:
-  scan:
-    uses: ./.github/workflows/trivy-scan.yml
 
+jobs:
   publish:
-    needs: scan
+    name: Build and Publish
     uses: ./.github/workflows/publish.yml
     secrets: inherit
-  
-  deploy:
+
+  scan:
+    name: Trivy Scan
     needs: publish
+    uses: ./.github/workflows/trivy-scan.yml
+    secrets: inherit
+
+  deploy:
+    name: Deployment
+    needs: scan
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
