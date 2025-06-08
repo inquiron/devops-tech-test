@@ -12,12 +12,15 @@
 name: CodeQL Scanning
 
 on:
-  push:
-    branches:
-      - main
-      - feature/*
-  schedule:
-    - cron: '20 15 * * 6'
+  workflow_call:
+
+# on:
+#   push:
+#     branches:
+#       - main
+#       - feature/*
+#   schedule:
+#     - cron: '20 15 * * 6'
 
 jobs:
   analyze:
