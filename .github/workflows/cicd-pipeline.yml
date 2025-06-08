@@ -12,12 +12,11 @@ jobs:
     secrets: inherit
 
   security-scan:
-    needs: publish
+    needs: build-and-publish
     uses: ./.github/workflows/trivy-scan.yml
     secrets: inherit
 
   deployment:
-    name: Deployment
-    needs: scan
+    needs: security-scan
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
