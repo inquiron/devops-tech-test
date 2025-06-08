@@ -2,7 +2,7 @@ on:
   workflow_call:
 
 jobs:
-  security-scan:
+  main:
     runs-on: ubuntu-latest
     steps:
       - name: Configure AWS credentials
@@ -39,10 +39,7 @@ jobs:
 
           docker pull "$IMAGE_URI"
 
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            aquasec/trivy:0.63.0 \
-            image --ignorefile .trivyignore --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_URI"
+          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace aquasec/trivy:0.63.0 image --ignorefile .trivyignore --exit-code 1 --severity HIGH,CRITICAL "$IMAGE_URI"
 
       #Cache Docker layers
       - name: Cache Docker layers
