@@ -38,14 +38,6 @@ jobs:
         aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION_CI }}
         echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
 
-    - name: Kustomize build and apply
-      run: |
-        pwd
-        ls -R
-        kubectl apply -k kustomize/overlays/production --validate=false
-      env:
-        KUBECONFIG: $HOME/.kube/config
-
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
