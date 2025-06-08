@@ -36,7 +36,6 @@ jobs:
         secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query SecretString --output text)
         echo "$secret_json" | jq -r 'to_entries|map("\(.key)=\(.value|@sh)")|.[]' >> $GITHUB_ENV
         aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION_CI }}
-        echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
