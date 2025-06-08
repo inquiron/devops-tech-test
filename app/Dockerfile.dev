@@ -13,4 +13,4 @@ COPY . .
 EXPOSE 9002
 
 # Start the app with nodemon for live reload
-CMD ["npx", "start"]
+CMD ["npm", "start"]

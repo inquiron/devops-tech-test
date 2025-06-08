@@ -30,24 +30,19 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION_CI }}
 
-# --- Helm deploy step ---
-    - name: Fetch AWS secret JSON
-      id: fetch_secret
+    - name: Fetch AWS secrets and export env vars
+      id: fetch_aws_secrets
       run: |
-        aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION_CI }}
         secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query SecretString --output text)
-        echo "secret_json=$secret_json" >> $GITHUB_OUTPUT
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION_CI }}
+        echo "$secret_json" | jq -r 'to_entries|map("\(.key)=\(.value|@sh)")|.[]' >> $GITHUB_ENV
+        aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION_CI }}
+        done
 
-    - name: Deploy with Helm
+    - name: Kustomize build and apply
       run: |
-        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-        helm create helm-chart
-        helm upgrade --install my-release ./helm-chart \
-          --set secretJson='${{ steps.fetch_secret.outputs.secret_json }}'
+        kubectl apply -k overlays/production
+      env:
+        KUBECONFIG: $HOME/.kube/config
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2

@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: devops-tech-test
-  labels:
-    app: devops-tech-test
 spec:
   replicas: 3
   selector:
@@ -15,22 +13,29 @@ spec:
         app: devops-tech-test
     spec:
       containers:
-      - name: devops-tech-test
-        image: {{ .Values.image | quote }}
-        ports:
-        - containerPort: '9002'
-        env:
-        - name: APP_PORT
-          value: '9002'
-        - name: GOOGLE_KEY
-          value: {{ (fromJson .Values.secretJson).GOOGLE_KEY | quote }}
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-          limits:
-            cpu: "500m"
-            memory: "256Mi"
+        - name: devops-tech-test
+          image: ecr-repo/devops-tech-test
+          ports:
+            - containerPort: 8080
+              name: app-port
+          env:
+            - name: APP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: devops-tech-test-secret
+                  key: APP_PORT
+            - name: GOOGLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: devops-tech-test-secret
+                  key: GOOGLE_KEY
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
       imagePullSecrets:
       - name: ecr-registry-secret
       strategy:

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-tech-test-service
+spec:
+  ports:
+    - port: 80
+      targetPort: ${APP_PORT}

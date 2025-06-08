@@ -1,3 +1,13 @@
 resources:
   - ../../base
-  - ingress.yml
+
+patchesStrategicMerge:
+  - patch-env.yaml
+
+secretGenerator:
+  - name: devops-tech-test-secret
+    literals:
+      - GOOGLE_KEY=${GOOGLE_KEY}
+      - APP_PORT=${APP_PORT}
+generatorOptions:
+  disableNameSuffixHash: true
