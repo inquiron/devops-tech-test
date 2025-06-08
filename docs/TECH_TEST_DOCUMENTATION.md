@@ -10,6 +10,7 @@
 
 
 ### PROJECT STRUCTURE
+```
 .
 ├── .github/
 │   └── workflows/
@@ -37,6 +38,7 @@
 ├── Dockerfile.dev                    # Development Dockerfile
 ├── .tool-versions                    # ASDF tool versions
 └── README.md
+```
 
 # Dockerization
 
@@ -146,6 +148,7 @@ To verify or rotate secrets:
 # Kubernetes with Kustomize
 
 ### Directory structure
+```
 kustomize/
 ├── base/
 │   ├── deployment.yaml
@@ -159,6 +162,7 @@ kustomize/
 │   └── production/
 │       ├── patch-env.yaml
 │       └── kustomization.yaml
+```
 
 ### Features
 - Environment-specific values via patch-env.yaml
@@ -173,10 +177,12 @@ kustomize/
 # Terraform (Infrastructure as Code)
 
 # Directory Structure
+```
 terraform/
 ├── main.tf
 ├── variables.tf
 └── outputs.tf
+```
 
 ### Features
 * Supports both local and remote deployments
