@@ -40,7 +40,9 @@ jobs:
 
     - name: Kustomize build and apply
       run: |
-        kubectl apply -k overlays/production
+        pwd
+        ls -R
+        kubectl apply -k kustomize/overlays/production
       env:
         KUBECONFIG: $HOME/.kube/config
 
