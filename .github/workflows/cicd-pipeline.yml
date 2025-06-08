@@ -7,18 +7,16 @@ on:
 
 
 jobs:
-  publish:
-    name: Build and Publish
+  build-and-publish:
     uses: ./.github/workflows/publish.yml
     secrets: inherit
 
-  scan:
-    name: Trivy Scan
+  security-scan:
     needs: publish
     uses: ./.github/workflows/trivy-scan.yml
     secrets: inherit
 
-  deploy:
+  deployment:
     name: Deployment
     needs: scan
     uses: ./.github/workflows/deploy.yml

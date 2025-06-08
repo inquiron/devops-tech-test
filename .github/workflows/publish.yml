@@ -9,7 +9,7 @@ on:
         required: true
 
 jobs:
-  publish-build:
+  build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
