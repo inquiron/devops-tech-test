@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/publish.yml
     secrets: inherit
 
-  trivy-scan:
+  security-scan:
     needs: build-and-publish
     uses: ./.github/workflows/trivy-scan.yml
     secrets: inherit
