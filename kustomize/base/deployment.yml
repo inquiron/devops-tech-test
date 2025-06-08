@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: devops-tech-test
+  labels:
+    app: devops-tech-test
 spec:
   replicas: 3
   selector:
@@ -14,17 +16,14 @@ spec:
     spec:
       containers:
       - name: devops-tech-test
-        image: 036676155227.dkr.ecr.eu-north-1.amazonaws.com/devops-tech-test:latest
+        image: {{ .Values.image | quote }}
         ports:
-        - containerPort: 9002
+        - containerPort: '9002'
         env:
         - name: APP_PORT
-          value: "9002"
+          value: '9002'
         - name: GOOGLE_KEY
-          valueFrom:
-            secretKeyRef:
-              name: devops-tech-test-secret
-              key: GOOGLE_KEY
+          value: {{ (fromJson .Values.secretJson).GOOGLE_KEY | quote }}
         resources:
           requests:
             cpu: "100m"
@@ -34,3 +33,8 @@ spec:
             memory: "256Mi"
       imagePullSecrets:
       - name: ecr-registry-secret
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
+          maxSurge: 1

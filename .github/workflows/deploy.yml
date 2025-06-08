@@ -30,6 +30,32 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION_CI }}
 
+# --- Helm deploy step ---
+    - name: Install AWS CLI v2
+      run: |
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        rm -rf awscliv2.zip aws/
+
+    - name: Fetch AWS secret JSON
+      id: fetch_secret
+      run: |
+        aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION_CI }}
+        secret_json=$(aws secretsmanager get-secret-value --secret-id ${{ secrets.AWS_SECRET_NAME }} --query SecretString --output text)
+        echo "secret_json=$secret_json" >> $GITHUB_OUTPUT
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION_CI }}
+
+    - name: Deploy with Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        helm create helm-chart
+        helm upgrade --install my-release ./helm-chart \
+          --set secretJson='${{ steps.fetch_secret.outputs.secret_json }}'
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
