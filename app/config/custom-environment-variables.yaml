@@ -1,5 +1,5 @@
 app:
   port: APP_PORT
 
-google:
-  key: GOOGLE_KEY
+secret:
+  key: SECRET_KEY

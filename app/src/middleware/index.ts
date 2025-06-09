@@ -1,4 +1,2 @@
-export * from './constant';
-export * from './geocode';
-export * from './home';
+export * from './hello';
 export * from './schema';

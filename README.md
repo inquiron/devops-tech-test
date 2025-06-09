@@ -4,12 +4,12 @@ We think infrastructure is best represented as code, and provisioning of resourc
 
 We are testing your ability to implement modern automated infrastructure, as well as general knowledge of system administration and coding. In your solution you should emphasize readability, maintainability and DevOps methodologies.
 
-To begin
+To begin the test:
 
-* Clone this repository and start adding your changes.
-* Commit often, we would rather see a history of trial and error than a single monolithic push.
-* When you're finished open a PR and let us know it is ready for review.
-* Please ensure you include all steps taken to get your solution running so that we can reproduce predictably.
+1. Clone this repository and start adding your changes.
+2. Commit often, we would rather see a history of trial and error than a single monolithic push.
+3. When you're finished open a PR and let us know it is ready for review.
+4. Please ensure you include all steps taken to get your solution running so that we can reproduce predictably.
 
 ## Pre-requisites
 
@@ -60,6 +60,20 @@ node dist/index.js
 
 _You should replicate similar steps to production in the provided Dockerfile. Do not create a separate Dockerfile_
 
+You can check the application is running with
+
+```bash
+curl http://localhost:90002/hello
+
+# OR
+
+curl http://localhost:90002/hello?name=Joe
+
+# OR the health check endpoint
+
+curl http://localhost:9002/healthz
+```
+
 ### Production application files
 
 All transpiled files that are needed to run the application in a production environment is in the `dist/` directory along with the `node_modules` available after running `npm i --omit dev` for the first time (i.e. `node_modules` directory does not already exist).
@@ -106,11 +120,12 @@ The team want to deploy the application to a Kubernetes cluster. They would like
 
 * Utilise [Kustomize](https://kustomize.io/) to create a base and overlays for local and production
 * Write Kubernetes resources in `kustomize` directory.
-* Set and inject `APP_PORT` and `GOOGLE_KEY` environment variables for Pods
-* Ensure `GOOGLE_KEY` is managed as sensitive information
+* Set and inject `APP_PORT` and `SECRET_KEY` environment variables for Pods
+* Ensure `SECRET_KEY` is managed as sensitive information - you can set this to any value for the purpose of this test. We mainly want to see that you know best practices for keep secure information from leaking.
 * Ensure the application is highly available
 * Ensure application is exposed outside the cluster in both local and production setups
 * Provide steps to create and install required extensions to the cluster
+* Use the `/healthz` endpoint in your Pod health checks
 
 ### Extra Credit
 
