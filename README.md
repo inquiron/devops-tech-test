@@ -4,7 +4,12 @@ We think infrastructure is best represented as code, and provisioning of resourc
 
 We are testing your ability to implement modern automated infrastructure, as well as general knowledge of system administration and coding. In your solution you should emphasize readability, maintainability and DevOps methodologies.
 
-To begin, clone this repository and start adding your to your repo. Commit often, we would rather see a history of trial and error than a single monolithic push. When you're finished, send us the URL to your repository or preferrably a PR.
+To begin
+
+* Clone this repository and start adding your changes.
+* Commit often, we would rather see a history of trial and error than a single monolithic push.
+* When you're finished open a PR and let us know it is ready for review.
+* Please ensure you include all steps taken to get your solution running so that we can reproduce predictably.
 
 ## Pre-requisites
 
@@ -53,7 +58,7 @@ npm run compile
 node dist/index.js
 ```
 
-_You should replicate similar steps to production in the Dockerfile_
+_You should replicate similar steps to production in the provided Dockerfile. Do not create a separate Dockerfile_
 
 ### Production application files
 
@@ -61,10 +66,10 @@ All transpiled files that are needed to run the application in a production envi
 
 ### Task
 
-* Complete the `Dockerfile` located in the root of the project for the application that is in the `app/` directory.
-* Ensure the Docker build process effectively utilises cache layers.
-* Ensure runtime image is as small as possible and has no vulnerabilities. (We are keen to be able to reproduce your steps for detecting vulnerabilities)
-* Ensure the image is secure by ensuring permissions are set correctly.
+* Update the provided `Dockerfile` located in the root of the project for the application that is in the `app/` directory.
+* Ensure the Docker build process effectively utilises cache layers to minimise the steps to rebuild image when changes are introduced.
+* Ensure runtime image is as small as possible and has minimal or no vulnerabilities. (We are keen to be able to reproduce your steps for detecting vulnerabilities so please document how you verified image vulnerabilities)
+* Ensure the image is secure by setting permissions correctly include ownership.
 * Determine appropriate entrypoint and/or command for the running image.
 
 ### What we are looking for
@@ -74,6 +79,10 @@ All transpiled files that are needed to run the application in a production envi
 * Image vulnerabilities
 * Image security
 * Docker layer caching
+
+### Extra Credit
+
+* Can kill node process with SIGINT without changes to source code
 
 ## 2. CI/CD
 
@@ -85,7 +94,6 @@ The team would like to setup a CI pipeline to build and publish the Docker image
 * Trigger the publish pipeline when a commit is pushed on `main`
 * Minimise the pipeline run time as much as possible
 
-
 ### Extra Credit
 
 * Idempotently create the ECR repository as part of the publish pipeline if it does not already exist, or fail silently and continue if it already exists
@@ -96,27 +104,29 @@ The team want to deploy the application to a Kubernetes cluster. They would like
 
 ### Task
 
+* Utilise [Kustomize](https://kustomize.io/) to create a base and overlays for local and production
 * Write Kubernetes resources in `kustomize` directory.
-* Set `APP_PORT` and `GOOGLE_KEY` environment variables
+* Set and inject `APP_PORT` and `GOOGLE_KEY` environment variables for Pods
 * Ensure `GOOGLE_KEY` is managed as sensitive information
 * Ensure the application is highly available
-* Ensure application is exposed outside the cluster
+* Ensure application is exposed outside the cluster in both local and production setups
+* Provide steps to create and install required extensions to the cluster
 
 ### Extra Credit
 
 * Do not use any templating tools such as Helm
-* Utilise [Kustomize](https://kustomize.io/) to create a base and overlays for local and production
 * Horizontal Pod Autoscaling - ensure the pod can scale based on CPU utilisation of 50%
 
 ## 4. Terraform
 
-The team want to automate the deployment process. They would like you to write the Terraform that will deploy the application resources to a target Kubernetes cluster. This should work for both local and remote Kubernetes clusters so it can be used to deploy and run locally as well as to a remote environment.
+The team want to automate the deployment process. They would like you to write the Terraform that will deploy the application resources from Task 3 to a target Kubernetes cluster. This should work for both local and remote Kubernetes clusters so it can be used to deploy and run locally as well as to a remote environment.
 
 ### Task
 
-* Write Terraform to deploy the application resource to a Kubernetes cluster
+* Write Terraform to deploy the application resources in `kustomize/` directory to a Kubernetes cluster
 * Ensure the Terraform can be used for both local and remote deployments
 * Set environment-specific variables depending on target environment, i.e. local or production
+* Provide steps for the team to trigger the deployment themselves for both local and production
 
 ### Extra Credit
 
