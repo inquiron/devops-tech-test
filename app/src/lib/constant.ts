@@ -1,1 +1,1 @@
-export const RESPONSE_FALLBACK = 'World!';
+export const RESPONSE_FALLBACK = "World!";

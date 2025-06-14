@@ -209,3 +209,6 @@ terragrunt-debug.tfvars.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,terraform,node,terragrunt,helm
+
+# Baseline Trivy report
+security_scan.txt

@@ -1,0 +1,33 @@
+repos:
+  # Basic code hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+        exclude: ^\.venv/ # Ignore large files in the Python virtual environment
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.37.1
+    hooks:
+      - id: yamllint
+
+  # ESLint - JavaScript only (configurable for TS if needed)
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.29.0
+    hooks:
+      - id: eslint
+        additional_dependencies: [eslint@9.4.0]
+        types: [javascript]
+
+  # Prettier formatter for multiple file types
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: npx prettier --write
+        language: node
+        files: \.(js|ts|json|yml|yaml|md)$
+        additional_dependencies: ["prettier@3.2.5"]

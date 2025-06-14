@@ -80,23 +80,23 @@ All transpiled files that are needed to run the application in a production envi
 
 ### Task
 
-* Update the provided `Dockerfile` located in the root of the project for the application that is in the `app/` directory.
-* Ensure the Docker build process effectively utilises cache layers to minimise the steps to rebuild image when changes are introduced.
-* Ensure runtime image is as small as possible and has minimal or no vulnerabilities. (We are keen to be able to reproduce your steps for detecting vulnerabilities so please document how you verified image vulnerabilities)
-* Ensure the image is secure by setting permissions correctly include ownership.
-* Determine appropriate entrypoint and/or command for the running image.
+- Update the provided `Dockerfile` located in the root of the project for the application that is in the `app/` directory.
+- Ensure the Docker build process effectively utilises cache layers to minimise the steps to rebuild image when changes are introduced.
+- Ensure runtime image is as small as possible and has minimal or no vulnerabilities. (We are keen to be able to reproduce your steps for detecting vulnerabilities so please document how you verified image vulnerabilities)
+- Ensure the image is secure by setting permissions correctly include ownership.
+- Determine appropriate entrypoint and/or command for the running image.
 
 ### What we are looking for
 
-* Production-ready application image
-* Image size
-* Image vulnerabilities
-* Image security
-* Docker layer caching
+- Production-ready application image
+- Image size
+- Image vulnerabilities
+- Image security
+- Docker layer caching
 
 ### Extra Credit
 
-* Can kill node process with SIGINT without changes to source code
+- Can kill node process with SIGINT without changes to source code
 
 ## 2. CI/CD
 
@@ -104,13 +104,13 @@ The team would like to setup a CI pipeline to build and publish the Docker image
 
 ### Task
 
-* Write a CI pipeline in `.github/workflows/publish.yml`
-* Trigger the publish pipeline when a commit is pushed on `main`
-* Minimise the pipeline run time as much as possible
+- Write a CI pipeline in `.github/workflows/publish.yml`
+- Trigger the publish pipeline when a commit is pushed on `main`
+- Minimise the pipeline run time as much as possible
 
 ### Extra Credit
 
-* Idempotently create the ECR repository as part of the publish pipeline if it does not already exist, or fail silently and continue if it already exists
+- Idempotently create the ECR repository as part of the publish pipeline if it does not already exist, or fail silently and continue if it already exists
 
 ## 3. Kubernetes
 
@@ -118,19 +118,19 @@ The team want to deploy the application to a Kubernetes cluster. They would like
 
 ### Task
 
-* Utilise [Kustomize](https://kustomize.io/) to create a base and overlays for local and production
-* Write Kubernetes resources in `kustomize` directory.
-* Set and inject `APP_PORT` and `SECRET_KEY` environment variables for Pods
-* Ensure `SECRET_KEY` is managed as sensitive information - you can set this to any value for the purpose of this test. We mainly want to see that you know best practices for keep secure information from leaking.
-* Ensure the application is highly available
-* Ensure application is exposed outside the cluster in both local and production setups
-* Provide steps to create and install required extensions to the cluster
-* Use the `/healthz` endpoint in your Pod health checks
+- Utilise [Kustomize](https://kustomize.io/) to create a base and overlays for local and production
+- Write Kubernetes resources in `kustomize` directory.
+- Set and inject `APP_PORT` and `SECRET_KEY` environment variables for Pods
+- Ensure `SECRET_KEY` is managed as sensitive information - you can set this to any value for the purpose of this test. We mainly want to see that you know best practices for keep secure information from leaking.
+- Ensure the application is highly available
+- Ensure application is exposed outside the cluster in both local and production setups
+- Provide steps to create and install required extensions to the cluster
+- Use the `/healthz` endpoint in your Pod health checks
 
 ### Extra Credit
 
-* Do not use any templating tools such as Helm
-* Horizontal Pod Autoscaling - ensure the pod can scale based on CPU utilisation of 50%
+- Do not use any templating tools such as Helm
+- Horizontal Pod Autoscaling - ensure the pod can scale based on CPU utilisation of 50%
 
 ## 4. Terraform
 
@@ -138,11 +138,11 @@ The team want to automate the deployment process. They would like you to write t
 
 ### Task
 
-* Write Terraform to deploy the application resources in `kustomize/` directory to a Kubernetes cluster
-* Ensure the Terraform can be used for both local and remote deployments
-* Set environment-specific variables depending on target environment, i.e. local or production
-* Provide steps for the team to trigger the deployment themselves for both local and production
+- Write Terraform to deploy the application resources in `kustomize/` directory to a Kubernetes cluster
+- Ensure the Terraform can be used for both local and remote deployments
+- Set environment-specific variables depending on target environment, i.e. local or production
+- Provide steps for the team to trigger the deployment themselves for both local and production
 
 ### Extra Credit
 
-* Provision and utilise a service to manage applying the kustomization in the cluster
+- Provision and utilise a service to manage applying the kustomization in the cluster

@@ -1,8 +1,8 @@
-import { Server } from 'http';
-import Koa from 'koa';
-import logger from 'koa-pino-logger';
+import { Server } from "http";
+import Koa from "koa";
+import logger from "koa-pino-logger";
 
-import { Router } from './router';
+import { Router } from "./router";
 
 export class Application extends Koa {
   private server?: Server;
@@ -20,7 +20,7 @@ export class Application extends Koa {
 
     this.silent = true;
     this.proxy = true;
-    this.on('error', console.error);
+    this.on("error", console.error);
     this.use(logger());
   }
 

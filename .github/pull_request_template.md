@@ -2,23 +2,13 @@
 
 1. Docker
 
-
-
 2. CI
-
-
 
 3. Kubernetes
 
-
-
 4. Deployment
 
-
-
 ### Document any other steps we need to follow
-
-
 
 ### Checklist before requesting a review
 

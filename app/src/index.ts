@@ -1,5 +1,5 @@
-import { application } from './app';
-import { configuration } from './lib/config';
+import { application } from "./app";
+import { configuration } from "./lib/config";
 
 try {
   application.start(configuration.app.port);

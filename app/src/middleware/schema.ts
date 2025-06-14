@@ -1,7 +1,7 @@
-import Ajv from 'ajv';
-import type { CurrentOptions } from 'ajv/dist/core';
-import formats from 'ajv-formats';
-import { Middleware } from 'koa';
+import Ajv from "ajv";
+import type { CurrentOptions } from "ajv/dist/core";
+import formats from "ajv-formats";
+import { Middleware } from "koa";
 
 interface SchemaDefinition {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,13 +25,13 @@ interface Config {
 }
 
 export function schemaMiddlewareFactory(
-  config: Config
+  config: Config,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Middleware<{ data: { [key: string]: any } }> {
   const { opts = {}, expose = false, schema } = config;
   const { headers, body, query, path, files } = schema;
   const schemaDefinition = {
-    type: 'object',
+    type: "object",
     properties: {
       headers: headers || {},
       body: body || {},
@@ -39,7 +39,7 @@ export function schemaMiddlewareFactory(
       path: path || {},
       files: files || {},
     },
-    required: ['headers', 'body', 'query', 'path', 'files'],
+    required: ["headers", "body", "query", "path", "files"],
   };
   const ajv = new Ajv({
     removeAdditional: true,
@@ -61,7 +61,7 @@ export function schemaMiddlewareFactory(
     const data = { headers, path, query, body, files };
 
     if (!validate(data)) {
-      ctx.throw(400, 'Bad Request', ...(expose ? [validate.errors!] : []));
+      ctx.throw(400, "Bad Request", ...(expose ? [validate.errors!] : []));
     }
 
     ctx.state.data = data;
