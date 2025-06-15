@@ -1,0 +1,65 @@
+---
+name: Code & Dependency Scan - Push Safety Net
+
+on:
+  push:
+    branches: ["main", "feature/**"]
+    paths: ["app/**", "**/package*.json", "**/*.ts", "**/*.js"]
+
+jobs:
+  code-scan:
+    name: Code & Dependency Security Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".tool-versions"
+
+      - name: Cache NPM
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ["npm-${{ runner.os }}-"]
+
+      - name: Install Dependencies
+        working-directory: ./app
+        run: npm install
+
+      - name: Run ESLint
+        working-directory: ./app
+        run: |
+          if [ -f "./node_modules/.bin/eslint" ]; then
+            npx eslint . --ext .ts,.js || true
+          else
+            echo "No linter found. Skipping."
+          fi
+
+      - name: Run npm audit
+        working-directory: ./app
+        run: npm audit --audit-level=high || true
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin
+
+      - name: Trivy Filesystem Scan
+        run: |
+          trivy fs ./app \
+            --severity HIGH,CRITICAL \
+            --exit-code 0 \
+            --skip-dirs node_modules \
+            --format table \
+            -o trivy-code-scan.txt
+
+      - name: Upload Trivy Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-code-report
+          path: trivy-code-scan.txt

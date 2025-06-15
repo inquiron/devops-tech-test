@@ -1,0 +1,15 @@
+---
+extends: default
+rules:
+  # Disable rules that conflict with GitHub Actions syntax
+  truthy: disable                # Allow "on: push" in workflows
+  document-start: disable        # Don't require "---" at file start
+  line-length:
+    max: 120                     # Increase line length limit to 120 chars
+    allow-non-breakable-words: true
+  comments-indentation: disable  # Relax comment spacing rules
+
+# Ignore virtualenv and node_modules
+ignore: |
+  .venv/
+  node_modules/

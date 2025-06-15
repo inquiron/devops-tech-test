@@ -1,5 +1,6 @@
+---
 app:
   port: 9002
 
 secret:
-  key: super-secret-key
+  key: "super-secret-key"
