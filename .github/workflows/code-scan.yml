@@ -4,7 +4,11 @@ name: Code & Dependency Scan - Push Safety Net
 on:
   push:
     branches: ["main", "feature/**"]
-    paths: ["app/**", "**/package*.json", "**/*.ts", "**/*.js"]
+    paths:
+      - "app/**"
+      - "**/package*.json"
+      - "**/*.ts"
+      - "**/*.js"
 
 jobs:
   code-scan:
@@ -25,7 +29,8 @@ jobs:
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ["npm-${{ runner.os }}-"]
+          restore-keys:
+            - npm-${{ runner.os }}-
 
       - name: Install Dependencies
         working-directory: ./app

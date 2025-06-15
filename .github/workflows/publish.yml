@@ -3,11 +3,16 @@ name: CI/CD Pipeline - Publish to ECR
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
     paths:
       - "app/**"
       - "Dockerfile"
       - ".github/workflows/publish.yml"
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   build-and-push:
@@ -76,10 +81,8 @@ jobs:
 
       - name: Ensure ECR repository exists
         run: |
-          aws ecr describe-repositories \
-            --repository-names devops-app || \
-          aws ecr create-repository \
-            --repository-name devops-app
+          aws ecr describe-repositories --repository-names devops-app || \
+          aws ecr create-repository --repository-name devops-app
 
       - name: Log in to Amazon ECR
         id: login-ecr
