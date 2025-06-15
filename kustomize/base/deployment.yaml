@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-api
+  template:
+    metadata:
+      labels:
+        app: my-api
+    spec:
+      containers:
+        - name: api
+          image: my-api-image:latest
+          ports:
+            - containerPort: 9002
+          env:
+            - name: APP_PORT
+              value: "9002"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: my-api-secret
+                  key: secret-key
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 9002
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 9002
+            initialDelaySeconds: 5
+            periodSeconds: 5
