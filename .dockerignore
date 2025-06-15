@@ -1,3 +1,11 @@
+# Ignore everything by default
 *
-!app/src
-!app/config
+
+# Allow Dockerfile context to include build essentials
+!Dockerfile
+!docker-compose.yml
+!app/package.json
+!app/package-lock.json
+!app/tsconfig.json
+!app/src/**
+!app/config/**
