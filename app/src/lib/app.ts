@@ -1,38 +1,22 @@
-import { Server } from "http";
-import Koa from "koa";
-import logger from "koa-pino-logger";
-
-import { Router } from "./router";
+import Koa from 'koa';
+import Router from 'koa-router';
 
 export class Application extends Koa {
-  private server?: Server;
+  public router: Router;
 
-  constructor(options?: {
-    env?: string | undefined;
-    keys?: string[] | undefined;
-    proxy?: boolean | undefined;
-    subdomainOffset?: number | undefined;
-    proxyIpHeader?: string | undefined;
-    maxIpsCount?: number | undefined;
-    asyncLocalStorage?: boolean | undefined;
-  }) {
-    super(options);
-
-    this.silent = true;
-    this.proxy = true;
-    this.on("error", console.error);
-    this.use(logger());
+  constructor() {
+    super();
+    this.router = new Router();
   }
 
-  public start(port: number) {
-    this.server = this.listen(port);
+  start(port: number): void {
+    this.use(this.router.routes()).use(this.router.allowedMethods());
+    this.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
   }
 
-  public stop() {
-    this.server?.close();
-  }
-
-  public set router(router: Router) {
-    this.use(router.attach());
+  stop(): void {
+    this.removeAllListeners();
   }
 }

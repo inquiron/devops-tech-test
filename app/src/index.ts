@@ -1,9 +1,16 @@
-import { application } from "./app";
-import { configuration } from "./lib/config";
+import { application } from './app';
+import config from 'config';
 
 try {
-  application.start(configuration.app.port);
+  const port = config.get<number>('app.port');
+  const secret = config.get<string>('secret.key');
+
+  if (!port || !secret) {
+    throw new Error('Missing required environment configuration.');
+  }
+
+  application.start(port);
 } catch (error) {
-  console.error(error);
+  console.error('Failed to start application:', error);
   application.stop();
 }

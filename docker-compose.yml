@@ -1,0 +1,19 @@
+services:
+  node-api:
+    container_name: node-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9002:9002"
+    environment:
+      NODE_ENV: development
+      NODE_CONFIG_DIR: /app/config    # Absolute path inside container
+      APP_PORT: 9002
+      SECRET_KEY: super-secret-key
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
