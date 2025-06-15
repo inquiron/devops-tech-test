@@ -1,0 +1,94 @@
+---
+name: CI/CD Pipeline - Publish to ECR
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "app/**"
+      - "Dockerfile"
+      - ".github/workflows/publish.yml"
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".tool-versions"
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        working-directory: ./app
+        run: npm install
+
+      - name: Run npm audit (non-blocking)
+        working-directory: ./app
+        run: npm audit --audit-level=high || true
+
+      - name: Install Trivy and Syft
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
+            | sh -s -- -b /usr/local/bin
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
+            | sh -s -- -b /usr/local/bin
+
+      - name: Build Docker image
+        run: docker build -t devops-app .
+
+      - name: Scan image with Trivy
+        run: |
+          trivy image \
+            --severity CRITICAL,HIGH \
+            --exit-code 0 \
+            --format table \
+            -o trivy-report.txt devops-app
+
+      - name: Generate SBOM with Syft
+        run: syft devops-app -o spdx-json > syft-sbom.json
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            trivy-report.txt
+            syft-sbom.json
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::235562991700:role/GitHubActions
+          aws-region: eu-west-2
+
+      - name: Ensure ECR repository exists
+        run: |
+          aws ecr describe-repositories \
+            --repository-names devops-app || \
+          aws ecr create-repository \
+            --repository-name devops-app
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag and push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker tag devops-app $ECR_REGISTRY/devops-app:$IMAGE_TAG
+          docker push $ECR_REGISTRY/devops-app:$IMAGE_TAG
