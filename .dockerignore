@@ -1,3 +1,36 @@
 *
+!app/package.json
+!app/package-lock.json
 !app/src
 !app/config
+!app/tsconfig.json
+
+# Node.js dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Build output
+dist
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Git files
+.git
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+
+# OS and editor settings
+.DS_Store
+.env
+.vscode
+.idea
+
+# Coverage/test output
+coverage
+*.lcov

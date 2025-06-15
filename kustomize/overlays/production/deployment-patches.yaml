@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-api
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: api
+          image: 123456789012.dkr.ecr.us-west-1.amazonaws.com/my-api:latest
