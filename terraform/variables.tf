@@ -4,7 +4,7 @@ variable "kubeconfig_path" {
 }
 
 variable "env" {
-  description = "Deployment environment (e.g., local or production)"
+  description = "Deployment environment (e.g., local, production, ci)"
   type        = string
 }
 
