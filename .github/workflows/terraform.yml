@@ -43,5 +43,5 @@ jobs:
         working-directory: ./terraform
 
       - name: Terraform Plan
-        run: terraform plan -var-file=env/github.tfvars
+        run: terraform plan -var-file=./env/github.tfvars
         working-directory: ./terraform
