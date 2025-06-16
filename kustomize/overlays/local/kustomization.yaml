@@ -1,6 +1,17 @@
 resources:
   - ../../base
 
-patchesStrategicMerge:
-  - patch-deployment.yaml
-  - ingress-patch.yaml
+namespace: default
+
+patches:
+  - target:
+      kind: Ingress
+      name: devops-ingress
+      namespace: default
+    path: ingress-patch.yaml
+
+  - target:
+      kind: Deployment
+      name: devops-api
+      namespace: default
+    path: patch-deployment.yaml
