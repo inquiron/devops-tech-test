@@ -1,16 +1,17 @@
-# Null resource to apply Kustomize overlay
+# Apply the Kustomize overlay using local-exec
 resource "null_resource" "apply_kustomize" {
   provisioner "local-exec" {
-    # Inline KUBECONFIG to guarantee correct context in CI/WSL2
+    # Inline KUBECONFIG to guarantee correct context (works for CI, WSL2, etc.)
     command = "KUBECONFIG=${var.kubeconfig_path} kubectl apply -k ${path.module}/../kustomize/overlays/${var.env} --validate=false"
   }
 
   triggers = {
-    always_run = timestamp()  # Forces re-run on every apply
+    # Forces re-run on every Terraform apply
+    always_run = timestamp()
   }
 }
 
-# Conditionally create the secret only outside GitHub Actions
+# Conditionally create the Kubernetes secret only when not running in CI
 resource "kubernetes_secret" "app_secret" {
   count = var.env == "ci" ? 0 : 1
 
