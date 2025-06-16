@@ -1,0 +1,8 @@
+resources:
+  - deployment.yaml
+  - service.yaml
+  - configmap.yaml
+  - secret.yaml
+  - networkpolicy.yaml
+  - serviceaccount.yaml
+  - hpa.yaml

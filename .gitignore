@@ -212,3 +212,5 @@ terragrunt-debug.tfvars.json
 
 # Baseline Trivy report
 security_scan.txt
+kustomize/overlays/production/kubeval-linux-amd64.tar.gz
+minikube-linux-arm64

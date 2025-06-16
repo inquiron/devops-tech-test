@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-api
+  labels:
+    app: devops-api
+spec:
+  selector:
+    matchLabels:
+      app: devops-api
+  template:
+    metadata:
+      labels:
+        app: devops-api
+    spec:
+      containers:
+        - name: api
+          image: 235562991700.dkr.ecr.eu-west-2.amazonaws.com/devops-app:bebad4f42a2b762d0d452a4d89c2bbe930c844b8
