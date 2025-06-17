@@ -6,3 +6,4 @@ resources:
   - networkpolicy.yaml
   - serviceaccount.yaml
   - hpa.yaml
+  - ingress.yaml
