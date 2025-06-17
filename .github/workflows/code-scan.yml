@@ -30,7 +30,7 @@ jobs:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys:
-            - npm-${{ runner.os }}-
+            - "npm-${{ runner.os }}-"
 
       - name: Install Dependencies
         working-directory: ./app
