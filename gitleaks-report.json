@@ -1,0 +1,22 @@
+[
+  {
+    "Description": "GCP API key",
+    "StartLine": 5,
+    "EndLine": 5,
+    "StartColumn": 9,
+    "EndColumn": 0,
+    "Match": "AIzaSyBmZcEnmjF5tG1ZSwkRtkqpi1Syk46uReo",
+    "Secret": "AIzaSyBmZcEnmjF5tG1ZSwkRtkqpi1Syk46uReo",
+    "File": "app/config/default.yaml",
+    "SymlinkFile": "",
+    "Commit": "926bbcbf4425d1e587135ef4631c7d1430c4cdea",
+    "Entropy": 4.7338696,
+    "Author": "Christian Shaw",
+    "Email": "christian.shaw@track24.com",
+    "Date": "2025-03-27T12:14:16Z",
+    "Message": "Initial commit",
+    "Tags": [],
+    "RuleID": "gcp-api-key",
+    "Fingerprint": "926bbcbf4425d1e587135ef4631c7d1430c4cdea:app/config/default.yaml:gcp-api-key:5"
+  }
+]

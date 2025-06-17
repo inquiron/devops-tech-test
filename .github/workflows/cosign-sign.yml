@@ -1,0 +1,51 @@
+name: Sign Docker Image (Cosign)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sign-image:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      AWS_REGION: eu-west-2
+      ECR_REGISTRY: 235562991700.dkr.ecr.eu-west-2.amazonaws.com
+      IMAGE_NAME: devops-app
+      IMAGE_DIGEST: sha256:28e947f1ee03879f04dcc9da58cca144c8a47ec6edb76a48fc57e63abdf75ad4
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::235562991700:role/github-actions-ecr-role # Replace with the correct role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Cosign
+        run: |
+          curl -sSL https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64 \
+          -o cosign && chmod +x cosign && sudo mv cosign /usr/local/bin/
+
+      - name: Decode Cosign private key
+        run: echo "${{ secrets.COSIGN_PRIVATE_KEY }}" | base64 -d > cosign.key
+
+      - name: Sign image with Cosign
+        run: |
+          echo "${{ secrets.COSIGN_PASSWORD }}" | cosign sign \
+            --key cosign.key \
+            ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}@${{ env.IMAGE_DIGEST }}
+
+      - name: Decode Cosign public key
+        run: echo "${{ secrets.COSIGN_PUBLIC_KEY }}" | base64 -d > cosign.pub
+
+      - name: Verify image signature with Cosign
+        run: |
+          cosign verify \
+            --key cosign.pub \
+            ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}@${{ env.IMAGE_DIGEST }}
