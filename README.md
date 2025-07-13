@@ -31,8 +31,6 @@ asdf plugin add kustomize
 asdf install
 ```
 
----
-
 ## 1. Docker
 
 The team currently deploy an API onto a Virtual Machine (VM) and run the Node process directly on the VM. This has caused some unpredictable behaviour from running on the engineer's local machines vs running the application remotely on a VM. In order ensure the application runs consistently on all machines the team have elected to Dockerise the application, but haven't written a Dockerfile before and have asked for you to create them a boilerplate example that incorporates best practices when writing Dockerfiles.
